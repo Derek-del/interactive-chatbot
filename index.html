@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Prescribing</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Manrope:wght@400;500;700&display=swap');
+
+    :root {
+      --bg-1: #f4f7ef;
+      --bg-2: #e4efe2;
+      --text: #1f3329;
+      --muted: #50675c;
+      --primary: #2f8f6a;
+      --primary-deep: #23684d;
+      --bot-bubble: #f9fffb;
+      --user-bubble: #d9f2e4;
+      --panel: rgba(255, 255, 255, 0.56);
+      --panel-border: rgba(56, 94, 77, 0.18);
+      --shadow: 0 20px 50px rgba(35, 104, 77, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: 'Manrope', sans-serif;
+      color: var(--text);
+      overflow: hidden;
+      background: radial-gradient(circle at 15% 20%, var(--bg-2), transparent 40%),
+        radial-gradient(circle at 80% 10%, #eaf4db, transparent 35%),
+        linear-gradient(135deg, var(--bg-1), #edf6f0 55%, #eaf6f0);
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 40% 60% 60% 40% / 45% 35% 65% 55%;
+      opacity: 0.3;
+      filter: blur(0.2px);
+      animation: float 12s ease-in-out infinite;
+    }
+
+    .blob.one {
+      width: 260px;
+      height: 260px;
+      top: 10%;
+      left: -60px;
+      background: #b3dfc5;
+    }
+
+    .blob.two {
+      width: 320px;
+      height: 320px;
+      bottom: -80px;
+      right: 7%;
+      background: #cde7bb;
+      animation-delay: 1.4s;
+    }
+
+    .blob.three {
+      width: 220px;
+      height: 220px;
+      top: 46%;
+      right: 24%;
+      background: #b9e0d6;
+      animation-delay: 2.8s;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: min(980px, 94vw);
+      height: min(88vh, 760px);
+      margin: 6vh auto;
+      border: 1px solid var(--panel-border);
+      border-radius: 28px;
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .view {
+      position: absolute;
+      inset: 0;
+      padding: clamp(22px, 3vw, 42px);
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(22px) scale(0.98);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .view.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .home-content {
+      text-align: center;
+      max-width: 740px;
+      animation: rise 900ms ease both;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #1f5b43;
+      background: rgba(47, 143, 106, 0.14);
+      border: 1px solid rgba(47, 143, 106, 0.18);
+    }
+
+    h1 {
+      margin: 16px 0 12px;
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.2rem, 6vw, 4.4rem);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+    }
+
+    .intro {
+      margin: 0 auto 28px;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: clamp(1rem, 2.2vw, 1.18rem);
+      line-height: 1.7;
+    }
+
+    .cta {
+      border: none;
+      border-radius: 999px;
+      padding: 15px 32px;
+      background: linear-gradient(135deg, var(--primary), #449e7a);
+      color: #f6fffb;
+      font-weight: 700;
+      font-size: 1.04rem;
+      cursor: pointer;
+      box-shadow: 0 16px 28px rgba(35, 104, 77, 0.24);
+      transition: transform 240ms ease, box-shadow 240ms ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 20px 32px rgba(35, 104, 77, 0.29);
+    }
+
+    .focus-row {
+      margin-top: 22px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: #2f5f4b;
+      font-size: 0.91rem;
+      font-weight: 600;
+    }
+
+    .focus-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.66);
+      border: 1px solid rgba(46, 91, 72, 0.16);
+      animation: fadeInUp 680ms ease both;
+    }
+
+    .focus-chip:nth-child(2) {
+      animation-delay: 120ms;
+    }
+
+    .focus-chip:nth-child(3) {
+      animation-delay: 240ms;
+    }
+
+    .chat-shell {
+      width: min(840px, 100%);
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      border-radius: 22px;
+      border: 1px solid rgba(43, 85, 67, 0.14);
+      background: rgba(248, 255, 251, 0.76);
+      overflow: hidden;
+      box-shadow: 0 12px 38px rgba(45, 96, 71, 0.16);
+    }
+
+    .chat-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(43, 85, 67, 0.12);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chat-title {
+      margin: 0;
+      font-family: 'Fraunces', serif;
+      font-size: 1.38rem;
+    }
+
+    .reset {
+      border: 1px solid rgba(39, 89, 67, 0.2);
+      background: white;
+      color: #2b6148;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 180ms ease;
+    }
+
+    .reset:hover {
+      transform: translateY(-1px);
+      border-color: rgba(39, 89, 67, 0.34);
+    }
+
+    .messages {
+      padding: 18px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .messages::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      background: rgba(46, 101, 75, 0.2);
+      border-radius: 12px;
+    }
+
+    .msg {
+      max-width: min(88%, 650px);
+      padding: 12px 15px;
+      border-radius: 14px;
+      line-height: 1.65;
+      font-size: 0.96rem;
+      box-shadow: 0 10px 24px rgba(43, 99, 74, 0.09);
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeInUp 320ms ease forwards;
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      background: var(--bot-bubble);
+      border: 1px solid rgba(35, 79, 61, 0.12);
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: var(--user-bubble);
+      border: 1px solid rgba(35, 104, 77, 0.12);
+    }
+
+    .typing {
+      align-self: flex-start;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(35, 79, 61, 0.12);
+      background: var(--bot-bubble);
+      display: inline-flex;
+      gap: 6px;
+      width: fit-content;
+    }
+
+    .typing.hidden {
+      display: none;
+    }
+
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #67927f;
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: 130ms;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: 260ms;
+    }
+
+    .options {
+      padding: 14px;
+      border-top: 1px solid rgba(43, 85, 67, 0.12);
+      display: grid;
+      gap: 8px;
+      background: rgba(242, 252, 247, 0.75);
+    }
+
+    .option {
+      border: 1px solid rgba(47, 95, 73, 0.18);
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: left;
+      color: #274838;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 180ms ease;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: fadeInUp 300ms ease forwards;
+    }
+
+    .option:hover {
+      background: #f2fbf6;
+      transform: translateX(4px);
+      border-color: rgba(36, 102, 75, 0.3);
+    }
+
+    .option.secondary {
+      background: rgba(229, 245, 237, 0.65);
+      border-style: dashed;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0);
+      }
+
+      50% {
+        transform: translateY(-20px) rotate(4deg);
+      }
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%,
+      70%,
+      100% {
+        transform: scale(0.7);
+        opacity: 0.6;
+      }
+
+      35% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        width: 100vw;
+        min-height: 100vh;
+        height: auto;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+      }
+
+      .view {
+        padding: 20px 14px;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 12vw, 3rem);
+      }
+
+      .chat-shell {
+        border-radius: 16px;
+      }
+
+      .messages {
+        max-height: 52vh;
+      }
+
+      .option {
+        font-size: 0.93rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true">
+    <div class="blob one"></div>
+    <div class="blob two"></div>
+    <div class="blob three"></div>
+  </div>
+
+  <main class="app">
+    <section class="view active" id="homeView">
+      <div class="home-content">
+        <span class="tag">Psychology-Informed Care</span>
+        <h1>Social Prescribing</h1>
+        <p class="intro">
+          Mental health is shaped by connection, meaning, and community. This space introduces social
+          prescribing through a supportive conversation designed around wellbeing, belonging, and practical next steps.
+        </p>
+        <button class="cta" id="startBtn">Start Conversation</button>
+        <div class="focus-row">
+          <span class="focus-chip">Belonging</span>
+          <span class="focus-chip">Purpose</span>
+          <span class="focus-chip">Community Support</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" id="chatView">
+      <div class="chat-shell">
+        <header class="chat-head">
+          <h2 class="chat-title">Social Prescribing Assistant</h2>
+          <button class="reset" id="restartBtn" type="button">Choose another question</button>
+        </header>
+
+        <div class="messages" id="messages">
+          <div class="typing hidden" id="typing" aria-label="Bot typing">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+
+        <div class="options" id="options"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Replace this array with your own assignment's pre-answered questions and replies.
+    const qaData = [
+      {
+        q: 'What is social prescribing from a psychology perspective?',
+        a: 'Social prescribing supports mental health by connecting people to meaningful community activities, because belonging and routine can reduce stress, isolation, and low mood.'
+      },
+      {
+        q: 'How can it help with anxiety or loneliness?',
+        a: 'It offers non-clinical support such as peer groups, volunteering, movement, and creative spaces. These increase social connection and self-efficacy, which are protective factors for wellbeing.'
+      },
+      {
+        q: 'Who is involved in social prescribing?',
+        a: 'A healthcare professional may refer someone to a link worker, who then co-creates a personalised plan based on interests, strengths, and local opportunities.'
+      },
+      {
+        q: 'Why is this better than giving advice only?',
+        a: 'Advice alone can feel abstract. Social prescribing turns support into action by helping people access real places and people in their community, which improves follow-through.'
+      },
+      {
+        q: 'Can social prescribing support students?',
+        a: 'Yes. Students can benefit from structured social groups, mentoring, nature activities, and wellbeing workshops that improve coping, connection, and confidence.'
+      }
+    ];
+
+    const homeView = document.getElementById('homeView');
+    const chatView = document.getElementById('chatView');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const messagesEl = document.getElementById('messages');
+    const optionsEl = document.getElementById('options');
+    const typingEl = document.getElementById('typing');
+
+    let askedIndexes = new Set();
+
+    function switchView(target) {
+      const goingToChat = target === 'chat';
+      homeView.classList.toggle('active', !goingToChat);
+      chatView.classList.toggle('active', goingToChat);
+      if (goingToChat && messagesEl.childElementCount <= 1) {
+        bootChat();
+      }
+    }
+
+    function addMessage(role, text) {
+      const msg = document.createElement('div');
+      msg.className = `msg ${role}`;
+      msg.textContent = text;
+      messagesEl.appendChild(msg);
+      scrollToBottom();
+    }
+
+    function scrollToBottom() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function showTyping(show) {
+      typingEl.classList.toggle('hidden', !show);
+      if (show) {
+        messagesEl.appendChild(typingEl);
+      }
+      scrollToBottom();
+    }
+
+    function createOptionButton(text, onClick, isSecondary = false, delay = 0) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `option${isSecondary ? ' secondary' : ''}`;
+      btn.textContent = text;
+      btn.style.animationDelay = `${delay}ms`;
+      btn.addEventListener('click', onClick);
+      return btn;
+    }
+
+    function renderQuestionOptions(excludeIndex = null) {
+      optionsEl.innerHTML = '';
+      let visibleCount = 0;
+
+      qaData.forEach((item, index) => {
+        if (index === excludeIndex) return;
+        const delay = 80 * visibleCount;
+        const btn = createOptionButton(item.q, () => askQuestion(index), false, delay);
+        optionsEl.appendChild(btn);
+        visibleCount += 1;
+      });
+
+      if (visibleCount === 0) {
+        optionsEl.appendChild(
+          createOptionButton('Restart all questions', resetChat, true)
+        );
+      }
+    }
+
+    function askQuestion(index) {
+      const item = qaData[index];
+      askedIndexes.add(index);
+      optionsEl.innerHTML = '';
+      addMessage('user', item.q);
+      showTyping(true);
+
+      window.setTimeout(() => {
+        showTyping(false);
+        addMessage('bot', item.a);
+
+        const askAnother = createOptionButton('Choose another question', () => {
+          renderQuestionOptions(index);
+        }, true, 40);
+
+        const restart = createOptionButton('Restart chat', resetChat, true, 120);
+        optionsEl.append(askAnother, restart);
+      }, 900);
+    }
+
+    function bootChat() {
+      addMessage(
+        'bot',
+        'Hello. I can walk you through social prescribing with your prepared answers. Please select one question below to begin.'
+      );
+      renderQuestionOptions();
+    }
+
+    function resetChat() {
+      askedIndexes = new Set();
+      messagesEl.innerHTML = '';
+      messagesEl.appendChild(typingEl);
+      typingEl.classList.add('hidden');
+      bootChat();
+    }
+
+    startBtn.addEventListener('click', () => switchView('chat'));
+    restartBtn.addEventListener('click', () => renderQuestionOptions());
+  </script>
+</body>
+</html>
