@@ -30,6 +30,7 @@
     html,
     body {
       margin: 0;
+      height: 100%;
       min-height: 100%;
       font-family: 'Public Sans', Arial, Helvetica, sans-serif;
       background: linear-gradient(180deg, var(--bg), #f4eee1);
@@ -40,6 +41,7 @@
       display: grid;
       place-items: center;
       padding: 24px;
+      min-height: 100dvh;
       position: relative;
       overflow-x: hidden;
     }
@@ -73,6 +75,9 @@
     .app {
       width: min(1040px, 100%);
       min-height: min(92vh, 780px);
+      min-height: min(92dvh, 780px);
+      height: min(92vh, 780px);
+      height: min(92dvh, 780px);
       border-radius: 28px;
       background: transparent;
       box-shadow: none;
@@ -91,8 +96,8 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transform: translateY(10px);
-      transition: opacity 260ms ease, transform 260ms ease, visibility 0s linear 260ms;
+      transform: translateY(6px);
+      transition: opacity 200ms ease, transform 200ms ease, visibility 0s linear 200ms;
       padding: clamp(18px, 3vw, 34px);
       border-radius: 28px;
     }
@@ -102,7 +107,7 @@
       visibility: visible;
       pointer-events: auto;
       transform: translateY(0);
-      transition: opacity 260ms ease, transform 260ms ease;
+      transition: opacity 200ms ease, transform 200ms ease;
     }
 
     .home-wrap {
@@ -178,7 +183,7 @@
       font-size: 0.98rem;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 170ms ease, background-color 170ms ease, border-color 170ms ease;
+      transition: transform 140ms ease, background-color 140ms ease, border-color 140ms ease;
     }
 
     .btn:focus-visible {
@@ -222,7 +227,7 @@
       letter-spacing: 0.01em;
       cursor: pointer;
       overflow: hidden;
-      transition: transform 180ms ease, box-shadow 180ms ease;
+      transition: transform 140ms ease, box-shadow 140ms ease;
       box-shadow: 0 10px 22px rgba(10, 95, 89, 0.3);
     }
 
@@ -231,18 +236,18 @@
       position: absolute;
       inset: 0;
       background: linear-gradient(115deg, rgba(255, 255, 255, 0) 28%, rgba(255, 255, 255, 0.22) 46%, rgba(255, 255, 255, 0) 64%);
-      transform: translateX(-130%);
-      transition: transform 480ms ease;
+      transform: translateX(-110%);
+      transition: transform 360ms ease;
       pointer-events: none;
     }
 
     .talk-btn:hover {
-      transform: translateY(-1px);
+      transform: translateY(-0.5px);
       box-shadow: 0 14px 28px rgba(10, 95, 89, 0.36);
     }
 
     .talk-btn:hover::before {
-      transform: translateX(130%);
+      transform: translateX(110%);
     }
 
     .talk-label {
@@ -274,14 +279,15 @@
     }
 
     .talk-btn.opening {
-      animation: talkLaunch 560ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      animation: talkLaunch 420ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
       pointer-events: none;
     }
 
     .chat-shell {
       display: grid;
-      grid-template-rows: auto auto 1fr auto;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
       height: 100%;
+      min-height: 0;
       border: 1px solid rgba(185, 206, 200, 0.85);
       border-radius: 24px;
       overflow: hidden;
@@ -327,8 +333,11 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      min-height: 0;
       overflow: auto;
       scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
 
     .messages::-webkit-scrollbar {
@@ -349,7 +358,7 @@
       font-size: 0.97rem;
       color: var(--text);
       white-space: pre-line;
-      animation: gentleIn 220ms ease;
+      animation: gentleIn 170ms ease;
     }
 
     .msg.bot {
@@ -373,7 +382,7 @@
       width: min(90%, 760px);
       display: grid;
       gap: 10px;
-      animation: gentleIn 220ms ease;
+      animation: gentleIn 170ms ease;
     }
 
     .story-carousel-head {
@@ -430,12 +439,12 @@
       padding: 7px 12px;
       font-weight: 700;
       cursor: pointer;
-      transition: background-color 160ms ease, transform 160ms ease, opacity 160ms ease;
+      transition: background-color 130ms ease, transform 130ms ease, opacity 130ms ease;
     }
 
     .story-nav:hover:not(:disabled) {
       background: #eff7f4;
-      transform: translateY(-1px);
+      transform: translateY(-0.5px);
     }
 
     .story-nav:disabled {
@@ -456,7 +465,7 @@
 
     .story-track {
       display: flex;
-      transition: transform 260ms ease;
+      transition: transform 220ms ease;
       will-change: transform;
     }
 
@@ -547,8 +556,8 @@
       cursor: pointer;
       position: relative;
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 2px 4px rgba(16, 37, 33, 0.06);
-      transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
-      animation: gentleIn 220ms ease;
+      transition: background-color 130ms ease, border-color 130ms ease, transform 130ms ease, box-shadow 130ms ease;
+      animation: gentleIn 170ms ease;
     }
 
     .option::before {
@@ -572,7 +581,7 @@
     .option:hover {
       background: #ecf7f4;
       border-color: #76a99d;
-      transform: translateY(-1px);
+      transform: translateY(-0.5px);
       box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 0 4px 10px rgba(16, 37, 33, 0.09);
     }
 
@@ -623,7 +632,7 @@
       display: grid;
       place-items: center;
       cursor: pointer;
-      transition: all 140ms ease;
+      transition: all 120ms ease;
     }
 
     .rating-star:hover,
@@ -631,7 +640,7 @@
       background: #fff1cd;
       border-color: #d2b16a;
       color: #e1a600;
-      transform: translateY(-1px);
+      transform: translateY(-0.5px);
     }
 
     .rating-status {
@@ -641,25 +650,10 @@
       min-height: 1.4em;
     }
 
-    .prefs {
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text);
-      font-size: 0.91rem;
-    }
-
-    .prefs input {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--accent);
-    }
-
     @keyframes gentleIn {
       from {
         opacity: 0;
-        transform: translateY(6px);
+        transform: translateY(4px);
       }
       to {
         opacity: 1;
@@ -686,30 +680,28 @@
         opacity: 1;
       }
       35% {
-        transform: scale(1.06);
+        transform: scale(1.03);
       }
       100% {
-        transform: scale(18);
+        transform: scale(12);
         opacity: 0;
       }
-    }
-
-    .reduced-motion *,
-    .reduced-motion *::before,
-    .reduced-motion *::after {
-      animation: none !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
     }
 
     @media (max-width: 720px) {
       body {
         padding: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
       }
 
       .app {
         border-radius: 0;
+        width: 100%;
         min-height: 100vh;
+        min-height: 100dvh;
+        height: 100vh;
+        height: 100dvh;
         box-shadow: none;
       }
 
@@ -718,19 +710,85 @@
       }
 
       .view {
-        padding: 14px;
+        border-radius: 0;
+        padding: calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));
+      }
+
+      .chat-shell {
+        border-radius: 0;
+      }
+
+      .chat-header {
+        padding: 12px;
+        gap: 12px;
+      }
+
+      .chat-title {
+        width: 100%;
+        font-size: 1.05rem;
+      }
+
+      .header-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
       }
 
       .messages {
-        max-height: 52vh;
+        max-height: none;
+        padding: 12px;
+        gap: 8px;
+      }
+
+      .msg {
+        max-width: 92%;
+      }
+
+      .story-series {
+        width: 100%;
+      }
+
+      .story-hint {
+        top: 8px;
+        max-width: calc(100% - 16px);
+        font-size: 0.76rem;
+        text-align: center;
+      }
+
+      .story-controls {
+        bottom: 8px;
+      }
+
+      .story-nav {
+        min-height: 44px;
+      }
+
+      .options {
+        padding: 10px 10px calc(12px + env(safe-area-inset-bottom));
       }
 
       .home-actions {
         width: 100%;
       }
 
+      .talk-btn {
+        width: 100%;
+        min-height: 48px;
+        justify-content: space-between;
+      }
+
       .btn {
         width: 100%;
+        min-height: 44px;
+      }
+
+      .option {
+        min-height: 48px;
+      }
+
+      .rating-star {
+        width: 48px;
+        height: 48px;
       }
     }
   </style>
@@ -759,10 +817,6 @@
           </button>
         </div>
 
-        <label class="prefs" for="motionToggle">
-          <input type="checkbox" id="motionToggle" />
-          Reduce motion (quiet mode)
-        </label>
       </div>
     </section>
 
@@ -839,11 +893,7 @@
       yourGpSimpleTwo: 'Your link worker will have a conversation with you about your life, your interests and strengths, and symptoms/diagnoses that might be relevant to your referral.',
       yourGpSimpleThree: 'Together, you identify activities or services in your local community that could make a positive difference. The link worker then supports you in accessing those activities, following up to make sure things are working for you.',
       yourGpSimpleFour: 'Your link worker will also communicate on behalf of you with the community of your choice.',
-      whoDoIContactQuestion: 'Who do I contact?',
-      whoDoIContactOne: 'The first point of contact is your local GP.',
-      whoDoIContactTwo: 'You can also contact your local council’s health and wellbeing team, or search for social prescribing services through NHS online directories.',
-      whoDoIContactThree: 'If you are already working with a social worker, community nurse, or mental health professional, they may also be able to make a referral.',
-      whereFurtherSupportQuestion: 'Where can I find further support?',
+      whereFurtherSupportQuestion: 'Where can I find further information?',
       whereFurtherSupportOne: 'Beyond your GP and link worker, there are several places to turn for further information and support.',
       whereFurtherSupportTwo: 'Local Voluntary and Community Sector organisations are often at the heart of social prescribing networks and can connect you with grassroots support.',
       whereFurtherSupportThree: 'Here are a few links to find more information and support.\nhttps://socialprescribingacademy.org.uk/\nhttps://www.gov.uk/government/publications/social-prescribing-applying-all-our-health/social-prescribing-applying-all-our-health\nhttps://phw.nhs.wales/services-and-teams/primary-care-division/social-prescribing/\nhttps://www.rcpsych.ac.uk/mental-health/treatments-and-wellbeing/social-prescribing\nhttps://www.thejoyapp.com/articles/supporting-mental-health-concerns-through-social-prescribing\nhttps://www.theaccessgroup.com/en-gb/blog/hsc-10-ways-social-prescribing-can-improve-mental-health/',
@@ -898,7 +948,6 @@
     const startBtn = document.getElementById('startBtn');
     const anotherBtn = document.getElementById('anotherBtn');
     const exitBtn = document.getElementById('exitBtn');
-    const motionToggle = document.getElementById('motionToggle');
     const messagesEl = document.getElementById('messages');
     const optionsEl = document.getElementById('options');
     const typingEl = document.getElementById('typing');
@@ -1301,16 +1350,24 @@
       optionsEl.innerHTML = '';
       addMessage('user', flowText.selfReferralOptionSimple);
       runBotSequence([flowText.selfAnswerThree, flowText.selfAnswerFour], () => {
-        renderPostPrescriptionOptions('self');
+        renderOptions([
+          { label: flowText.yourGpOptionSimple, action: () => chooseYourGpSimple(true), secondary: true }
+        ]);
       });
     }
 
-    function chooseYourGpSimple() {
+    function chooseYourGpSimple(fromSelfPath = false) {
       optionsEl.innerHTML = '';
       addMessage('user', flowText.yourGpOptionSimple);
       runBotSequence(
         [flowText.yourGpSimpleOne, flowText.yourGpSimpleTwo, flowText.yourGpSimpleThree, flowText.yourGpSimpleFour],
         () => {
+          if (fromSelfPath) {
+            renderOptions([
+              { label: flowText.whereFurtherSupportQuestion, action: askWhereCanIFindFurtherSupport, secondary: true }
+            ]);
+            return;
+          }
           renderPostPrescriptionOptions('gp');
         }
       );
@@ -1323,18 +1380,8 @@
 
       renderOptions([
         alternateOption,
-        { label: flowText.whoDoIContactQuestion, action: askWhoDoIContact, secondary: true }
+        { label: flowText.whereFurtherSupportQuestion, action: askWhereCanIFindFurtherSupport, secondary: true }
       ]);
-    }
-
-    function askWhoDoIContact() {
-      optionsEl.innerHTML = '';
-      addMessage('user', flowText.whoDoIContactQuestion);
-      runBotSequence([flowText.whoDoIContactOne, flowText.whoDoIContactTwo, flowText.whoDoIContactThree], () => {
-        renderOptions([
-          { label: flowText.whereFurtherSupportQuestion, action: askWhereCanIFindFurtherSupport, secondary: true }
-        ]);
-      });
     }
 
     function askWhereCanIFindFurtherSupport() {
@@ -1382,24 +1429,14 @@
     }
 
     startBtn.addEventListener('click', () => {
-      const reducedMotion = document.body.classList.contains('reduced-motion');
-      if (reducedMotion) {
-        setView('chat');
-        return;
-      }
-
       startBtn.classList.add('opening');
       window.setTimeout(() => {
         setView('chat');
         startBtn.classList.remove('opening');
-      }, 420);
+      }, 360);
     });
     anotherBtn.addEventListener('click', () => resetChat());
     exitBtn.addEventListener('click', () => setView('home'));
-
-    motionToggle.addEventListener('change', (event) => {
-      document.body.classList.toggle('reduced-motion', event.target.checked);
-    });
   </script>
 </body>
 </html>
