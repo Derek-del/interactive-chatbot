@@ -905,21 +905,21 @@
       { text: 'Joy has been struggling with anxiety lately.', image: 'panel-01' },
       { text: 'Joy asks her GP if she can be referred to a link worker.', image: 'panel-02' },
       { text: 'Alice, a local link worker, meets with Joy.', image: 'panel-03' },
-      { text: 'Alice asks, \"What is truly important to you?\"', image: 'panel-04' },
-      { text: 'Joy explains her strengths and interests. She says, \"I really like music, reading, and pottery.\"', image: 'panel-05' },
-      { text: 'Alice tells Joy about a music club at the community centre, a book club at the library, and a local pottery store that has pottery classes.', image: 'panel-06' },
-      { text: 'Joy says the pottery class sounds perfect and she wants to do that.', image: 'panel-07' },
-      { text: 'Alice provides the contact details of the pottery class.', image: 'panel-08' },
-      { text: 'Joy says she feels anxious to call them herself.', image: 'panel-09' },
-      { text: 'Alice reassures Joy: \"Don’t worry, I will contact them for you.\"', image: 'panel-10' },
-      { text: 'Alice says, \"You just have to show up at 2pm on Friday.\"', image: 'panel-11' },
-      { text: 'Joy thanks Alice.', image: 'panel-12' },
+      { text: 'Alice asks, \"So, Joy, what is truly important to you?\"', image: 'panel-04' },
+      { text: 'Joy says, \"I really like music, reading, and pottery.\"', image: 'panel-05' },
+      { text: 'Alice says there is a music club at the community center, a book club at the library, and a local pottery store with pottery classes.', image: 'panel-06' },
+      { text: 'Joy says, \"The pottery class sounds perfect. I want to do that.\"', image: 'panel-07' },
+      { text: 'Alice provides the contact details.', image: 'panel-08' },
+      { text: 'Joy says, \"Oh... but I cannot call them myself. I am too anxious.\"', image: 'panel-09' },
+      { text: 'Alice says, \"Do not worry, I will contact them for you.\"', image: 'panel-10' },
+      { text: 'Alice says, \"It is booked. You just have to show up at 2pm on Friday.\"', image: 'panel-11' },
+      { text: 'Joy says, \"Thank you so much, Alice. Really, thank you.\"', image: 'panel-12' },
       { text: 'Joy finds the pottery class very relaxing.', image: 'panel-13' },
-      { text: 'Joy notices she is less anxious on the days she goes to pottery class.', image: 'panel-14' },
-      { text: 'After a few months, Joy’s anxiety has improved.', image: 'panel-15' },
-      { text: 'Joy says, \"I feel so much better now. I don’t visit the GP as often.\"', image: 'panel-16' },
-      { text: 'Joy continues her classes and says she will keep coming because it helps so much.', image: 'panel-17' },
-      { text: 'Joy keeps creating pottery and enjoys doing something she loves.', image: 'panel-18' }
+      { text: 'Joy notices that she is not as anxious on the days she has to go to pottery class.', image: 'panel-14' },
+      { text: 'After a few months, Joy\'s anxiety has improved.', image: 'panel-15' },
+      { text: 'Joy says, \"I feel so much better now. I do not visit the GP as often.\"', image: 'panel-16' },
+      { text: 'Joy continues her classes and says, \"I will keep coming. It is doing something I love, and it helps me so much.\"', image: 'panel-17' },
+      { text: 'Joy keeps creating pottery and doing something she loves.', image: 'panel-18' }
     ];
 
     const storyPanelData = {
@@ -1030,7 +1030,7 @@
         imageEl.className = 'story-image';
         imageEl.loading = 'lazy';
         imageEl.decoding = 'async';
-        imageEl.alt = `Story illustration for step ${index + 1}`;
+        imageEl.alt = point.text || `Story illustration for step ${index + 1}`;
         imageEl.src = storyPanelData[point.image] || point.image;
         imageEl.addEventListener('error', () => {
           const fallback = document.createElement('div');
