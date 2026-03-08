@@ -952,6 +952,21 @@
     const optionsEl = document.getElementById('options');
     const typingEl = document.getElementById('typing');
     let activeStoryCarousel = null;
+    let keepChatPinnedToBottom = true;
+
+    function scrollChatToBottom(behavior = 'auto') {
+      const maxTop = messagesEl.scrollHeight - messagesEl.clientHeight;
+      if (maxTop <= 0) return;
+      messagesEl.scrollTo({ top: maxTop, behavior });
+    }
+
+    function scheduleScrollToBottom(behavior = 'auto') {
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          scrollChatToBottom(behavior);
+        });
+      });
+    }
 
     function setView(view) {
       const showChat = view === 'chat';
@@ -1023,7 +1038,15 @@
       viewport.append(hint, track, controls);
       wrapper.appendChild(viewport);
 
-      for (const [index, point] of storyPoints.entries()) {
+      const orderedStoryPoints = [...storyPoints].sort((a, b) => {
+        const getPanelNumber = (value) => {
+          const match = String(value || '').match(/(\d+)(?!.*\d)/);
+          return match ? Number.parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+        };
+        return getPanelNumber(a.image) - getPanelNumber(b.image);
+      });
+
+      for (const [index, point] of orderedStoryPoints.entries()) {
         const card = document.createElement('article');
         card.className = 'story-card';
         const imageEl = document.createElement('img');
@@ -1031,8 +1054,14 @@
         imageEl.loading = 'lazy';
         imageEl.decoding = 'async';
         imageEl.alt = point.text || `Story illustration for step ${index + 1}`;
-        imageEl.src = storyPanelData[point.image] || point.image;
+        const panelFile = /\.[a-zA-Z0-9]+$/.test(point.image) ? point.image : `${point.image}.jpg`;
+        imageEl.src = `assets/story-panels/${panelFile}`;
         imageEl.addEventListener('error', () => {
+          const embeddedImage = storyPanelData[point.image];
+          if (embeddedImage && imageEl.src !== embeddedImage) {
+            imageEl.src = embeddedImage;
+            return;
+          }
           const fallback = document.createElement('div');
           fallback.className = 'story-image';
           fallback.style.display = 'grid';
@@ -1043,19 +1072,24 @@
           fallback.textContent = `Image unavailable (Step ${index + 1})`;
           imageEl.replaceWith(fallback);
         });
+        imageEl.addEventListener('load', () => {
+          if (keepChatPinnedToBottom) {
+            scheduleScrollToBottom('auto');
+          }
+        });
         card.append(imageEl);
         track.appendChild(card);
       }
 
       let currentIndex = 0;
-      const maxIndex = storyPoints.length - 1;
+      const maxIndex = orderedStoryPoints.length - 1;
       let pointerStartX = 0;
       let pointerStartY = 0;
       let pointerActive = false;
 
       function updateCarousel() {
         track.style.transform = `translateX(-${currentIndex * 100}%)`;
-        counter.textContent = `${currentIndex + 1} / ${storyPoints.length}`;
+        counter.textContent = `${currentIndex + 1} / ${orderedStoryPoints.length}`;
         prevBtn.disabled = currentIndex === 0;
         nextBtn.disabled = currentIndex === maxIndex;
       }
@@ -1112,7 +1146,7 @@
 
       updateCarousel();
       messagesEl.appendChild(wrapper);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      scheduleScrollToBottom('smooth');
       wrapper.focus({ preventScroll: true });
     }
 
@@ -1121,7 +1155,7 @@
       el.className = `msg ${role}`;
       el.innerHTML = linkifyText(text);
       messagesEl.appendChild(el);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      scheduleScrollToBottom('smooth');
     }
 
     function setTyping(isVisible) {
@@ -1129,7 +1163,7 @@
       if (isVisible) {
         messagesEl.appendChild(typingEl);
       }
-      messagesEl.scrollTop = messagesEl.scrollHeight;
+      scheduleScrollToBottom('smooth');
     }
 
     function makeOption(label, onClick, secondary = false) {
@@ -1148,6 +1182,7 @@
         const btn = makeOption(option.label, option.action, option.secondary);
         optionsEl.appendChild(btn);
       });
+      scheduleScrollToBottom('smooth');
     }
 
     function renderStarRating() {
@@ -1196,6 +1231,7 @@
 
       box.append(starsWrap, status);
       optionsEl.appendChild(box);
+      scheduleScrollToBottom('smooth');
     }
 
     function getTypingDelay(message, indexInSequence) {
@@ -1210,9 +1246,11 @@
     function runBotSequence(messages, onComplete) {
       const queue = [...messages];
       let messageIndex = 0;
+      keepChatPinnedToBottom = true;
 
       function runNext() {
         if (queue.length === 0) {
+          scheduleScrollToBottom('smooth');
           if (typeof onComplete === 'function') onComplete();
           return;
         }
@@ -1225,6 +1263,7 @@
         window.setTimeout(() => {
           setTyping(false);
           addMessage('bot', nextMessage);
+          scheduleScrollToBottom('smooth');
           runNext();
         }, typingDelay);
       }
@@ -1422,11 +1461,17 @@
     }
 
     function resetChat() {
+      keepChatPinnedToBottom = true;
       messagesEl.innerHTML = '';
       messagesEl.appendChild(typingEl);
       typingEl.classList.add('hidden');
       bootChat();
     }
+
+    messagesEl.addEventListener('scroll', () => {
+      const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+      keepChatPinnedToBottom = distanceFromBottom < 80;
+    });
 
     startBtn.addEventListener('click', () => {
       startBtn.classList.add('opening');
